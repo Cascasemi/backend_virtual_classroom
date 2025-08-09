@@ -12,6 +12,7 @@ router.get('/', CoursesController.getAllCourses);
 router.post('/', CoursesController.createCourse);
 router.put('/:courseId', CoursesController.updateCourse);
 router.delete('/:courseId', CoursesController.deleteCourse);
+router.put('/:courseId/enrollments', CoursesController.updateEnrollments);
 
 // Get available teachers for course assignment
 router.get('/teachers/available', CoursesController.getAvailableTeachers);

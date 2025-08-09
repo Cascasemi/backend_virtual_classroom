@@ -16,7 +16,7 @@ export class CoursesController {
       }
       const courses = await Course.find(filter)
         .populate('teacher', 'name email')
-        .populate('students', 'name email')
+        .populate('students', 'name email classCode')
         .sort({ yearGroup: 1, name: 1 });
       
       res.json({ courses });
@@ -127,7 +127,7 @@ export class CoursesController {
           description: description !== undefined ? description : course.description
         },
         { new: true }
-      ).populate('teacher', 'name email').populate('students', 'name email');
+      ).populate('teacher', 'name email').populate('students', 'name email classCode');
 
       res.json({ 
         success: true, 
@@ -174,6 +174,36 @@ export class CoursesController {
     } catch (error) {
       console.error('Get teachers error:', error);
       res.status(500).json({ error: 'Failed to fetch teachers' });
+    }
+  }
+
+  static async updateEnrollments(req: Request, res: Response) {
+    try {
+      const userPayload: any = (req as any).user;
+      if (!userPayload) return res.status(401).json({ error: 'Unauthorized' });
+      const { courseId } = req.params;
+      const { studentIds } = req.body as { studentIds: string[] };
+      if (!Array.isArray(studentIds)) return res.status(400).json({ error: 'studentIds array required' });
+
+      const course = await Course.findById(courseId);
+      if (!course) return res.status(404).json({ error: 'Course not found' });
+
+      // Only admin or assigned teacher can modify
+      if (userPayload.role !== 'admin' && (!course.teacher || course.teacher.toString() !== userPayload.sub)) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
+      // Validate students exist
+      const students = await User.find({ _id: { $in: studentIds }, role: 'student' }).select('_id');
+      const validIds = students.map((s: any) => s._id.toString());
+      course.students = validIds as any;
+      await course.save();
+      await course.populate('teacher', 'name email');
+      await course.populate('students', 'name email classCode');
+      res.json({ success: true, course });
+    } catch (error) {
+      console.error('Update enrollments error:', error);
+      res.status(500).json({ error: 'Failed to update enrollments' });
     }
   }
 }

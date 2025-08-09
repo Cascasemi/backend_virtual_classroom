@@ -119,7 +119,10 @@ export class AuthController {
           email: user.email, 
           role: user.role, 
           name: user.name,
-          isApproved: user.isApproved 
+          isApproved: user.isApproved,
+          emailVerified: user.emailVerified,
+          classYear: (user as any).classYear ?? null,
+          classCode: (user as any).classCode ?? null
         } 
       });
     } catch (error) {

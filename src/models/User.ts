@@ -14,6 +14,8 @@ export interface IUser extends Document {
   refreshTokens: { token: string; createdAt: Date }[];
   createdAt: Date;
   updatedAt: Date;
+  classYear?: number | null; // Added classYear field
+  classCode?: string | null; // New alphanumeric class code (e.g., AB1)
 }
 
 const TokenSchema = new Schema({
@@ -38,7 +40,9 @@ const UserSchema = new Schema<IUser>({
   }},
   verification: TokenSchema,
   reset: TokenSchema,
-  refreshTokens: [RefreshSchema]
+  refreshTokens: [RefreshSchema],
+  classYear: { type: Number, min: 1, max: 6, default: null }, // Added classYear field with validation
+  classCode: { type: String, default: null, match: /^[A-Za-z]{2}\d$/ }
 }, { timestamps: true });
 
 export const User = model<IUser>('User', UserSchema);

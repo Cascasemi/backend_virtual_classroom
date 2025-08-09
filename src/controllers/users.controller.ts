@@ -6,10 +6,26 @@ export class UsersController {
   static async getAllUsers(req: Request, res: Response) {
     try {
       const users = await User.find({}, '-passwordHash -refreshTokens -verification -reset').lean();
-      res.json({ users });
+      const mapped = users.map(u => ({ ...u, classYear: (u as any).classYear ?? null }));
+      res.json({ users: mapped });
     } catch (error) {
       console.error('Get users error:', error);
       res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  }
+
+  static async getStudents(req: Request, res: Response) {
+    try {
+      const { prefix } = req.query as { prefix?: string };
+      const filter: any = { role: 'student' };
+      if (prefix) {
+        filter.classCode = prefix.toUpperCase();
+      }
+      const students = await User.find(filter, 'name email classCode').sort({ name: 1 });
+      res.json({ students });
+    } catch (error) {
+      console.error('Get students error:', error);
+      res.status(500).json({ error: 'Failed to fetch students' });
     }
   }
 
@@ -49,6 +65,27 @@ export class UsersController {
     } catch (error) {
       console.error('Create user error:', error);
       res.status(500).json({ error: 'Failed to create user' });
+    }
+  }
+
+  static async updateProfile(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user?.sub;
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const { name, classYear, classCode } = req.body;
+      const update: any = {};
+      if (name !== undefined) update.name = name;
+      if (classYear !== undefined) {
+        if (classYear === null || (classYear >=1 && classYear <=6)) update.classYear = classYear; else return res.status(400).json({ error: 'Invalid classYear' });
+      }
+      if (classCode !== undefined) {
+        if (classCode === null || /^[A-Za-z]{2}\d$/.test(classCode)) update.classCode = classCode?.toUpperCase(); else return res.status(400).json({ error: 'Invalid classCode' });
+      }
+      const user = await User.findByIdAndUpdate(userId, update, { new: true }).select('-passwordHash -refreshTokens -verification -reset');
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error('Update profile error:', error);
+      res.status(500).json({ error: 'Failed to update profile' });
     }
   }
 }
