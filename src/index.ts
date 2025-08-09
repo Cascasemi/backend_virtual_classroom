@@ -7,6 +7,7 @@ import { connectDB } from './config/db';
 import { ENV } from './config/env';
 import { authRouter } from './routes/auth.routes';
 import { usersRouter } from './routes/users.routes';
+import coursesRouter from './routes/courses.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 async function bootstrap() {
@@ -24,6 +25,7 @@ async function bootstrap() {
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.use('/api/auth', authRouter);
   app.use('/api/users', usersRouter);
+  app.use('/api/courses', coursesRouter);
 
   app.use(errorHandler);
 
