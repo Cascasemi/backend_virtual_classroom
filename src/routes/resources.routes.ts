@@ -1,11 +1,14 @@
 import { Router } from 'express';
-import { auth } from '../middleware/auth';
+import { auth, AuthRequest } from '../middleware/auth';
 import upload from '../middleware/upload';
 import {
   getAllResources,
   createResource,
   uploadFile,
-  deleteResource
+  downloadResource,
+  deleteResource,
+  getAvailableClasses,
+  getStudentResources
 } from '../controllers/resources.controller';
 
 const router = Router();
@@ -16,14 +19,23 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Resources routes working', timestamp: new Date().toISOString() });
 });
 
+// Download resource (no auth required for viewing/downloading)
+router.get('/:id/download', downloadResource);
+
+// Student resources (requires any authenticated user)
+router.get('/student', auth('student', 'teacher', 'admin'), getStudentResources);
+
 // Apply auth middleware to protected routes - only teachers can manage resources
 router.use(auth('teacher'));
+
+// Get available classes
+router.get('/classes', getAvailableClasses);
 
 // Get all resources
 router.get('/', getAllResources);
 
 // Upload file to Cloudinary with error handling
-router.post('/upload', (req, res, next) => {
+router.post('/upload', (req: AuthRequest, res, next) => {
   console.log('Upload endpoint hit, user:', req.user?.email, 'role:', req.user?.role);
   upload.single('file')(req, res, (err) => {
     if (err) {
