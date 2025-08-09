@@ -8,6 +8,7 @@ import { ENV } from './config/env';
 import { authRouter } from './routes/auth.routes';
 import { usersRouter } from './routes/users.routes';
 import coursesRouter from './routes/courses.routes';
+import resourcesRouter from './routes/resources.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 async function bootstrap() {
@@ -26,6 +27,9 @@ async function bootstrap() {
   app.use('/api/auth', authRouter);
   app.use('/api/users', usersRouter);
   app.use('/api/courses', coursesRouter);
+  
+  console.log('Registering resources router at /api/resources');
+  app.use('/api/resources', resourcesRouter);
 
   app.use(errorHandler);
 

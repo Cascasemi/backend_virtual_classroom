@@ -102,7 +102,12 @@ export class AuthController {
       }
       
       // Generate tokens
-      const access = signAccess({ sub: user._id, role: user.role });
+      const access = signAccess({ 
+        sub: user._id, 
+        role: user.role, 
+        email: user.email, 
+        name: user.name 
+      });
       const refresh = signRefresh({ sub: user._id });
       
       // Store refresh token
