@@ -25,8 +25,8 @@ router.get('/:id/download', downloadResource);
 // Student resources (requires any authenticated user)
 router.get('/student', auth('student', 'teacher', 'admin'), getStudentResources);
 
-// Apply auth middleware to protected routes - only teachers can manage resources
-router.use(auth('teacher'));
+// Apply auth middleware to protected routes - teachers and admins can manage resources
+router.use(auth('teacher', 'admin'));
 
 // Get available classes
 router.get('/classes', getAvailableClasses);
