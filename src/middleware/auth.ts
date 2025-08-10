@@ -17,14 +17,22 @@ export function auth(...roles: string[]) {
     const token = header.split(' ')[1];
     try {
       const decoded: any = verifyAccess(token);
-      console.log('Token decoded successfully for user:', decoded.email, 'role:', decoded.role);
+      // Map standard JWT "sub" claim to internal id field expected by controllers
+      const userPayload = { id: decoded.sub, ...decoded };
+      req.user = userPayload;
+
+      console.log('Token decoded successfully --> id:', userPayload.id, 'role:', userPayload.role);
+
+      if (!userPayload.id) {
+        console.log('Decoded token missing sub/id');
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
       
-      if (roles.length && !roles.includes(decoded.role)) {
-        console.log('User role', decoded.role, 'not in required roles:', roles);
+      if (roles.length && !roles.includes(userPayload.role)) {
+        console.log('User role', userPayload.role, 'not in required roles:', roles);
         return res.status(403).json({ error: 'Forbidden' });
       }
       
-      req.user = decoded;
       next();
     } catch (e) {
       console.log('Token verification failed:', e);

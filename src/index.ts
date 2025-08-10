@@ -9,6 +9,7 @@ import { authRouter } from './routes/auth.routes';
 import { usersRouter } from './routes/users.routes';
 import coursesRouter from './routes/courses.routes';
 import resourcesRouter from './routes/resources.routes';
+import assessmentsRouter from './routes/assessments.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 async function bootstrap() {
@@ -30,6 +31,9 @@ async function bootstrap() {
   
   console.log('Registering resources router at /api/resources');
   app.use('/api/resources', resourcesRouter);
+  
+  console.log('Registering assessments router at /api/assessments');
+  app.use('/api/assessments', assessmentsRouter);
 
   app.use(errorHandler);
 
