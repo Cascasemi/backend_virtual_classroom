@@ -10,6 +10,8 @@ import { usersRouter } from './routes/users.routes';
 import coursesRouter from './routes/courses.routes';
 import resourcesRouter from './routes/resources.routes';
 import assessmentsRouter from './routes/assessments.routes';
+import sessionsRouter from './routes/sessions.routes';
+import googleRoutes from './routes/google.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 async function bootstrap() {
@@ -28,12 +30,10 @@ async function bootstrap() {
   app.use('/api/auth', authRouter);
   app.use('/api/users', usersRouter);
   app.use('/api/courses', coursesRouter);
-  
-  console.log('Registering resources router at /api/resources');
   app.use('/api/resources', resourcesRouter);
-  
-  console.log('Registering assessments router at /api/assessments');
   app.use('/api/assessments', assessmentsRouter);
+  app.use('/api/sessions', sessionsRouter);
+  app.use('/api/google', googleRoutes);
 
   app.use(errorHandler);
 
