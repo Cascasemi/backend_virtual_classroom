@@ -22,12 +22,7 @@ async function bootstrap() {
   const app = express();
 
   // Configure CORS to accept multiple origins
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://virtuclass-dash.vercel.app',
-    ENV.APP_URL
-  ].filter((origin, index, array) => array.indexOf(origin) === index); // Remove duplicates
+  const allowedOrigins = ENV.CORS_ORIGINS.split(',').map(origin => origin.trim());
 
   app.use(cors({ 
     origin: function (origin, callback) {
