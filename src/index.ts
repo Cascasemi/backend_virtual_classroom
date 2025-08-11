@@ -12,6 +12,9 @@ import resourcesRouter from './routes/resources.routes';
 import assessmentsRouter from './routes/assessments.routes';
 import sessionsRouter from './routes/sessions.routes';
 import googleRoutes from './routes/google.routes';
+import teacherRoutes from './routes/teacher.routes';
+import dashboardRoutes from './routes/dashboard.routes';
+import analyticsRoutes from './routes/analytics.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 async function bootstrap() {
@@ -34,6 +37,9 @@ async function bootstrap() {
   app.use('/api/assessments', assessmentsRouter);
   app.use('/api/sessions', sessionsRouter);
   app.use('/api/google', googleRoutes);
+  app.use('/api/teacher', teacherRoutes);
+  app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/analytics', analyticsRoutes);
 
   app.use(errorHandler);
 
