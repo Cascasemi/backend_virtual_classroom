@@ -21,7 +21,27 @@ async function bootstrap() {
   await connectDB();
   const app = express();
 
-  app.use(cors({ origin: ENV.APP_URL, credentials: true }));
+  // Configure CORS to accept multiple origins
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://virtuclass-dash.vercel.app',
+    ENV.APP_URL
+  ].filter((origin, index, array) => array.indexOf(origin) === index); // Remove duplicates
+
+  app.use(cors({ 
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true 
+  }));
   app.use(helmet());
   app.use(express.json());
   app.use(morgan('dev'));

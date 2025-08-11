@@ -11,5 +11,6 @@ export const ENV = {
   SMTP_USER: process.env.SMTP_USER || '',
   SMTP_PASS: process.env.SMTP_PASS || '',
   EMAIL_FROM: process.env.EMAIL_FROM || 'no-reply@virtuclass.local',
-  APP_URL: process.env.APP_URL || 'http://localhost:5173'
+  APP_URL: process.env.APP_URL || 'http://localhost:5173',
+  CORS_ORIGINS: process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:3000'
 };
